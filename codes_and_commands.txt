@@ -1,0 +1,54 @@
+Useful Command Line tools
+
+/* wmic - Windows Management Instrumentation Command-Line
+	http://technet.microsoft.com/en-us/library/bb742610.aspx
+	http://computer-forensics.sans.org/blog/2010/06/04/wmic-draft/
+*/
+
+//Installing Encase Agent on remote system (prior to copying installer)
+	wmic /node:<SystemName> process call create "C:\Windows\Temp\EnSetup.exe"
+	
+//Getting Processor load remotely using psexec remote cmd shell
+	wmic cpu get loadpercentage
+//For running list, but this cannot be cancelled via the active cmd shell, need to use pslist and pskill
+	typeperf "\Processor(_Total)\% Processor Time"
+
+//Excel vLookup
+ {Conditional}     {Cell in vlookup sheet, Sheet!Column to compare,array} {Compartive Responses}
+=IF(ISERROR(VLOOKUP(A2,ValidEmails!A:A,1,0)),"No","Yes")
+
+//PowerShell
+//Parsing Windows Eventlogs in PowerShell
+https://isc.sans.edu/diary/Parsing+Windows+Eventlogs+in+Powershell/15298
+get-eventlog -logname security -newest 10000 | Export-clixml seclog.xml #dumps the latest 10K events into XML
+PS C:\TEMP> $seclog = Import-Clixml seclog.xml #creates a variable with the entire log dump
+PS C:\TEMP> $seclog | group eventid -noelement | sort count # Use PS to get a rapid tally from the log.
+PS C:\TEMP> $seclog | ? { $_.eventid -match '5140' } | fl * # search the log for specific ID use MS KB947226 for ID ref
+
+//Pulling the userWorkstations attribute from specific ID in specific domain
+Get-ADUser NSSSrvAcct -Server DOMAINCONTROLLER -Properties userWorkstations | Export-Csv NSSSrvAcct_Properties.csv
+
+//Office 365 - Connecting via Powershell
+	$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell/" -Credential $cred -Authentication Basic -AllowRedirection
+
+//the first set of code creates the session, the code below imports it into your current Powershell instance so you can run the various commands.
+	Import-PSSession $session
+
+//Creating a Distribution List via Remote PS on Exchange 2013
+// Reference http://o365info.com/manage-distribution-groups-by-using/#SUB-1
+New-DistributionGroup -Name <DIST NAME> -DisplayName <Display Name> -Alias <alias> -PrimarySmtpAddress <email address>
+
+//Add Members to the list
+Add-DistributionGroupMember -Identity <dist group name> -Member <user name> -BypassSecurityGroupManagerCheck
+
+//Allow it to receive outside email - this may take time to take affect.
+Set-DistributionGroup <dist name> -RequireSenderAuthenticationEnabled $false
+
+//Get list of applications installed on a workstation
+Get-WmiObject -Class Win32_Product | Select-Object -Property Name #Use this to just get a count -> | Measure-Object
+
+//Getting Processor load remotely using Powershell
+Get-WmiObject -ComputerName REMOTECOMPUTER Win32_Processor | Select LoadPercentage | fl
+
+//Get current running processes and list them in table.
+Get-WmiObject -ComputerName STATION06 Win32_Process | Select ProcessName,ProcessID | ft -AutoSize
