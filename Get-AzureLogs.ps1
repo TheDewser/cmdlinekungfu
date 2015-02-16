@@ -13,7 +13,7 @@ Switched the $LogTime to just the date so scheduled jobs resultes will append to
 Import-Module Azure
 Import-AzurePublishSettingsFile -PublishSettingsFile <PATH TO AZURE PUBLISH SETTINGS FILE>
 
-$LogTime = get-date -Format "MM-dd-yyyy_hh-mm-ss"
+$LogTime = get-date -Format "MM-dd-yyyy"
 $LogFile = '<LOCAL PATH>'+"Azure_log_pull_"+$LogTime+".log"
 
 Function LogWrite
