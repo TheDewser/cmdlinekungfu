@@ -3,7 +3,10 @@ Script to pull files down from Azure Blob Storage.
 Removes older files based on oldblobs variable.
 Logs the files copied to the local server as well as those removed from Azure.
 
-Last Updated - 2/10/2015
+Last Updated - 2/16/2015
+Updated by - Mike Dews
+Added conditional LogWrite statements for when no blobs have been deleted from the container.
+Switched the $LogTime to just the date so scheduled jobs resultes will append to file.
 
 #>
 
@@ -50,5 +53,10 @@ foreach ($blob in $oldblobs)
         $blobsRemoved += 1
         LogWrite ("{0} - {1} deleted from {2} successfull." -f (get-date -Format g),$blob.Name,$DestinationPath)    
     }
-    LogWrite ("{0} - {1} blobs removed from container {2}." -f (get-date -format g),$blobsRemoved, $container)
+    if($blobsRemoved -gt 0){
+        LogWrite ("{0} - {1} blobs removed from container {2}." -f (get-date -format g),$blobsRemoved, $container)
+    }
+    else{
+        LogWrite ("{0} - No blobs removed from container" -f (get-date -format g))
+    }
   
