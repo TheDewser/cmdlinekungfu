@@ -52,3 +52,9 @@ Get-WmiObject -ComputerName REMOTECOMPUTER Win32_Processor | Select LoadPercenta
 
 //Get current running processes and list them in table.
 Get-WmiObject -ComputerName STATION06 Win32_Process | Select ProcessName,ProcessID | ft -AutoSize
+
+//Make big files for testing
+// Got the following from http://www.windows-commandline.com/how-to-create-large-dummy-file/
+// The following two commands will create a big file with actual data in it.
+echo "This is just a sample line appended  to create a big file. " > dummy.txt
+for /L %i in (1,1,21) do type dummy.txt >> dummy.txt
