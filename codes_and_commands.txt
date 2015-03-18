@@ -58,3 +58,9 @@ Get-WmiObject -ComputerName STATION06 Win32_Process | Select ProcessName,Process
 // The following two commands will create a big file with actual data in it.
 echo "This is just a sample line appended  to create a big file. " > dummy.txt
 for /L %i in (1,1,21) do type dummy.txt >> dummy.txt
+
+// VIRTUALIZATION
+// Changing virtual disk type in VirtualBox
+// https://coderwall.com/p/8c3bua/converting-virtual-disks-between-fixed-and-dynamic-size
+// needed to know this for adding a custom linux VHD to Azure in order to build an Azure VM off that disk.
+VBoxManage clonehd dynamic.vdi fixed.vdi --variant Fixed
