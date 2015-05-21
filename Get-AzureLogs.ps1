@@ -1,17 +1,27 @@
 <#
+.SYNOPSIS
 Script to pull files down from Azure Blob Storage.
 Removes older files based on oldblobs variable.
 Logs the files copied to the local server as well as those removed from Azure.
 
-Last Updated - 2/16/2015
-Updated by - Mike Dews
-Added conditional LogWrite statements for when no blobs have been deleted from the container.
-Switched the $LogTime to just the date so scheduled jobs resultes will append to file.
+.EXAMPLE
+Get-AzureLogs.ps1 -Publish <path to publish settings file> -StorageAccount <name of azure storage account> -KeyFile <path to text file with your storage key>
 
 #>
+[CmdletBinding()]
+Param (
+    [Parameter(Mandatory=$True,Position=1)]
+    [string]$Publish,
+
+    [Parameter(Mandatory=$True,Position=2)]
+    [string]$StorageAccount,
+
+    [Parameter(Mandatory=$True)]
+    [string]$KeyFile
+)
 
 Import-Module Azure
-Import-AzurePublishSettingsFile -PublishSettingsFile <PATH TO AZURE PUBLISH SETTINGS FILE>
+Import-AzurePublishSettingsFile -PublishSettingsFile $Publish
 
 $LogTime = get-date -Format "MM-dd-yyyy"
 $LogFile = '<LOCAL PATH>'+"Azure_log_pull_"+$LogTime+".log"
@@ -26,9 +36,10 @@ Function LogWrite
 
 $TodaysDate = get-date
 $UTCTime = $TodaysDate.ToUniversalTime()
+$StorageKey = Get-Content $KeyFile
 $container = '<CONTAINER WITH LOGS>'
 $DestinationPath = '<LOCAL PATH TO DUMP LOGS>'
-$context = New-AzureStorageContext -StorageAccountName <YOUR STORAGE ACCOUNT> -StorageAccountKey <YOUR STORAGE KEY>
+$context = New-AzureStorageContext -StorageAccountName $StorageAccount -StorageAccountKey $StorageKey
 $Newblobs = Get-AzureStorageBlob -Container $container -Context $context | where-object {$_.LastModified -ge $UTCTime.AddMinutes(-15)}
 $oldblobs = Get-AzureStorageBlob -Container $container -Context $context | where-object {$_.LastModified -le $UTCTime.AddDays(-14)}
 
