@@ -49,7 +49,7 @@ foreach ($blob in $Newblobs)
 
         Get-AzureStorageBlobContent `
         -Container $container -Blob $Blob.Name -Destination $DestinationPath `
-        -Context $context
+        -Context $context -Force
 
         LogWrite ("{0} - {1} copied to {2} successfully." -f (get-date -Format g),$blob.Name,$DestinationPath)
     }
