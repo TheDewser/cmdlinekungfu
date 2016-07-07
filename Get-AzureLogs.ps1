@@ -26,6 +26,7 @@ Import-AzurePublishSettingsFile -PublishSettingsFile $Publish
 $LogTime = get-date -Format "MM-dd-yyyy"
 $LogFile = '<LOCAL PATH>'+"Azure_log_pull_"+$LogTime+".log"
 
+# function to send status messages to a log file when content is being downloaded from blobs
 Function LogWrite
 {
     Param([string]$LogString)
@@ -36,13 +37,14 @@ Function LogWrite
 
 $TodaysDate = get-date
 $UTCTime = $TodaysDate.ToUniversalTime()
-$StorageKey = Get-Content $KeyFile
+$StorageKey = Get-Content $KeyFile # Don't hardcode this, it would be bad to upload it to Github
 $container = '<CONTAINER WITH LOGS>'
 $DestinationPath = '<LOCAL PATH TO DUMP LOGS>'
 $context = New-AzureStorageContext -StorageAccountName $StorageAccount -StorageAccountKey $StorageKey
 $Newblobs = Get-AzureStorageBlob -Container $container -Context $context | where-object {$_.LastModified -ge $UTCTime.AddMinutes(-15)}
 $oldblobs = Get-AzureStorageBlob -Container $container -Context $context | where-object {$_.LastModified -le $UTCTime.AddDays(-14)}
 
+# Gets new blob content from storage containers based on time stamp comment out the the pipe for $NewBlobs to pull the first batch of logs.
 foreach ($blob in $Newblobs)
     {
         New-Item -ItemType Directory -Force -Path $DestinationPath
@@ -54,6 +56,7 @@ foreach ($blob in $Newblobs)
         LogWrite ("{0} - {1} copied to {2} successfully." -f (get-date -Format g),$blob.Name,$DestinationPath)
     }
 
+# Storage cost money, delete your older logs you already downloaded them.
 foreach ($blob in $oldblobs) 
     {
         Write-Verbose ("Removing blob: {0}" -f $blob.Name)
