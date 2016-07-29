@@ -7,6 +7,8 @@ Useful Command Line tools
 
 //Installing Encase Agent on remote system (prior to copying installer)
 	wmic /node:<SystemName> process call create "C:\Windows\Temp\EnSetup.exe"
+//Getting list of startup items on remote system with details and paths.
+	wmic /node:<ip address> startup list full
 	
 //Getting Processor load remotely using psexec remote cmd shell
 	wmic cpu get loadpercentage
@@ -19,11 +21,11 @@ Useful Command Line tools
 
 //PowerShell
 //Parsing Windows Eventlogs in PowerShell
-https://isc.sans.edu/diary/Parsing+Windows+Eventlogs+in+Powershell/15298
+// https://isc.sans.edu/diary/Parsing+Windows+Eventlogs+in+Powershell/15298
 get-eventlog -logname security -newest 10000 | Export-clixml seclog.xml #dumps the latest 10K events into XML
-PS C:\TEMP> $seclog = Import-Clixml seclog.xml #creates a variable with the entire log dump
-PS C:\TEMP> $seclog | group eventid -noelement | sort count # Use PS to get a rapid tally from the log.
-PS C:\TEMP> $seclog | ? { $_.eventid -match '5140' } | fl * # search the log for specific ID use MS KB947226 for ID ref
+$seclog = Import-Clixml seclog.xml #creates a variable with the entire log dump
+$seclog | group eventid -noelement | sort count # Use PS to get a rapid tally from the log.
+$seclog | ? { $_.eventid -match '5140' } | fl * # search the log for specific ID use MS KB947226 for ID ref
 
 //Pulling the userWorkstations attribute from specific ID in specific domain
 Get-ADUser NSSSrvAcct -Server DOMAINCONTROLLER -Properties userWorkstations | Export-Csv NSSSrvAcct_Properties.csv
