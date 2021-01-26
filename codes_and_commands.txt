@@ -15,9 +15,17 @@ Useful Command Line tools
 //For running list, but this cannot be cancelled via the active cmd shell, need to use pslist and pskill
 	typeperf "\Processor(_Total)\% Processor Time"
 
-//Excel vLookup
- {Conditional}     {Cell in vlookup sheet, Sheet!Column to compare,array} {Compartive Responses}
-=IF(ISERROR(VLOOKUP(A2,ValidEmails!A:A,1,0)),"No","Yes")
+//Excel-Fu!------------------------------------------------------------------------------------------------
+	//Excel vLookup
+ 	{Conditional}     {Cell in vlookup sheet, Sheet!Column to compare,array} {Compartive Responses}
+	=IF(ISERROR(VLOOKUP(A2,ValidEmails!A:A,1,0)),"No","Yes")
+	
+	//Vulnerability Reporting functions
+	# Assigns a word based rating from a CVSS or other numbered severity score.  This makes graphing easier. 
+	=IF(K12>=5,"Critical",IF(K12>=4,"High",IF(K12>=2,"Medium","Low")))
+	
+	# Used to create a Vendor/Software column associed with specific vulnerability settings.  This tends to be excluded from many popular platforms.
+	=IF(ISNUMBER(SEARCH("Adobe",F2)),"Adobe",IF(ISNUMBER(SEARCH("Java",F2)),"Java",IF(ISNUMBER(SEARCH("wireshark",F2)),"wireshark",IF(ISNUMBER(SEARCH("Firefox",F2)),"Firefox","Other"))))))
 
 //PowerShell
 //Parsing Windows Eventlogs in PowerShell
