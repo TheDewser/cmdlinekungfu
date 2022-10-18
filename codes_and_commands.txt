@@ -28,40 +28,43 @@ Useful Command Line tools
 	=IF(ISNUMBER(SEARCH("Adobe",F2)),"Adobe",IF(ISNUMBER(SEARCH("Java",F2)),"Java",IF(ISNUMBER(SEARCH("wireshark",F2)),"wireshark",IF(ISNUMBER(SEARCH("Firefox",F2)),"Firefox","Other"))))))
 
 //PowerShell
-//Parsing Windows Eventlogs in PowerShell
-// https://isc.sans.edu/diary/Parsing+Windows+Eventlogs+in+Powershell/15298
-get-eventlog -logname security -newest 10000 | Export-clixml seclog.xml #dumps the latest 10K events into XML
-$seclog = Import-Clixml seclog.xml #creates a variable with the entire log dump
-$seclog | group eventid -noelement | sort count # Use PS to get a rapid tally from the log.
-$seclog | ? { $_.eventid -match '5140' } | fl * # search the log for specific ID use MS KB947226 for ID ref
+	//Parsing Windows Eventlogs in PowerShell
+	// https://isc.sans.edu/diary/Parsing+Windows+Eventlogs+in+Powershell/15298
+	get-eventlog -logname security -newest 10000 | Export-clixml seclog.xml #dumps the latest 10K events into XML
+	$seclog = Import-Clixml seclog.xml #creates a variable with the entire log dump
+	$seclog | group eventid -noelement | sort count # Use PS to get a rapid tally from the log.
+	$seclog | ? { $_.eventid -match '5140' } | fl * # search the log for specific ID use MS KB947226 for ID ref
 
-//Pulling the userWorkstations attribute from specific ID in specific domain
-Get-ADUser NSSSrvAcct -Server DOMAINCONTROLLER -Properties userWorkstations | Export-Csv NSSSrvAcct_Properties.csv
+	//Pulling the userWorkstations attribute from specific ID in specific domain
+	Get-ADUser NSSSrvAcct -Server DOMAINCONTROLLER -Properties userWorkstations | Export-Csv NSSSrvAcct_Properties.csv
 
-//Office 365 - Connecting via Powershell
-	$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell/" -Credential $cred -Authentication Basic -AllowRedirection
+	//Office 365 - Connecting via Powershell
+		$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.outlook.com/powershell/" -Credential $cred -Authentication Basic -AllowRedirection
 
-//the first set of code creates the session, the code below imports it into your current Powershell instance so you can run the various commands.
-	Import-PSSession $session
+	//the first set of code creates the session, the code below imports it into your current Powershell instance so you can run the various commands.
+		Import-PSSession $session
 
-//Creating a Distribution List via Remote PS on Exchange 2013
-// Reference http://o365info.com/manage-distribution-groups-by-using/#SUB-1
-New-DistributionGroup -Name <DIST NAME> -DisplayName <Display Name> -Alias <alias> -PrimarySmtpAddress <email address>
+	//Creating a Distribution List via Remote PS on Exchange 2013
+	// Reference http://o365info.com/manage-distribution-groups-by-using/#SUB-1
+	New-DistributionGroup -Name <DIST NAME> -DisplayName <Display Name> -Alias <alias> -PrimarySmtpAddress <email address>
 
-//Add Members to the list
-Add-DistributionGroupMember -Identity <dist group name> -Member <user name> -BypassSecurityGroupManagerCheck
+	//Add Members to the list
+	Add-DistributionGroupMember -Identity <dist group name> -Member <user name> -BypassSecurityGroupManagerCheck
 
-//Allow it to receive outside email - this may take time to take affect.
-Set-DistributionGroup <dist name> -RequireSenderAuthenticationEnabled $false
+	//Allow it to receive outside email - this may take time to take affect.
+	Set-DistributionGroup <dist name> -RequireSenderAuthenticationEnabled $false
 
-//Get list of applications installed on a workstation
-Get-WmiObject -Class Win32_Product | Select-Object -Property Name #Use this to just get a count -> | Measure-Object
+	//Get list of applications installed on a workstation
+	Get-WmiObject -Class Win32_Product | Select-Object -Property Name #Use this to just get a count -> | Measure-Object
 
-//Getting Processor load remotely using Powershell
-Get-WmiObject -ComputerName REMOTECOMPUTER Win32_Processor | Select LoadPercentage | fl
+	//Getting Processor load remotely using Powershell
+	Get-WmiObject -ComputerName REMOTECOMPUTER Win32_Processor | Select LoadPercentage | fl
 
-//Get current running processes and list them in table.
-Get-WmiObject -ComputerName STATION06 Win32_Process | Select ProcessName,ProcessID | ft -AutoSize
+	//Get current running processes and list them in table.
+	Get-WmiObject -ComputerName STATION06 Win32_Process | Select ProcessName,ProcessID | ft -AutoSize
+	
+	//Get the first and third line around a specific process in netstat:
+	netstat -anob | select-string "PROCESSNAME" -context 1,3
 
 //Make big files for testing
 // Got the following from http://www.windows-commandline.com/how-to-create-large-dummy-file/
